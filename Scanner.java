@@ -32,9 +32,47 @@ List<Token> scanTokens() {
     tokens.add(new Token(EOF, "", null, line));
     return tokens;
   }
+
+  private void scanToken() {
+    // single char lexemes
+    char c = advance();
+    switch (c) {
+      case '(': addToken(LEFT_PAREN); break;
+      case ')': addToken(RIGHT_PAREN); break;
+      case '{': addToken(LEFT_BRACE); break;
+      case '}': addToken(RIGHT_BRACE); break;
+      case ',': addToken(COMMA); break;
+      case '.': addToken(DOT); break;
+      case '-': addToken(MINUS); break;
+      case '+': addToken(PLUS); break;
+      case ';': addToken(SEMICOLON); break;
+      case '*': addToken(STAR); break; 
+    }
+  }
+
+  // Helpers
+
+  // All characters are consumed
   private boolean isAtEnd() {
     return current >= source.length();
   }
+
+  // Consume and return next character
+  private char advance() {
+    return source.charAt(current++);
+  }
+
+  // Grab text of current lexeme
+  private void addToken(TokenType type) {
+    addToken(type, null);
+  }
+
+  // what advance() is for input, addToken is for output
+  private void addToken(TokenType type, Object literal) {
+    String text = source.substring(start, current);
+    tokens.add(new Token(type, text, literal, line));
+  }
+
 }
 
 
