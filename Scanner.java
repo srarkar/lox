@@ -15,3 +15,16 @@ class Scanner {
     this.source = source;
   }
 }
+
+// list we are going to fill with generated tokens
+List<Token> scanTokens() {
+    while (!isAtEnd()) {
+      // We are at the beginning of the next lexeme.
+      start = current;
+      scanToken();
+    }
+
+    tokens.add(new Token(EOF, "", null, line));
+    return tokens;
+  }
+
