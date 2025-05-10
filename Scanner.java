@@ -71,6 +71,15 @@ List<Token> scanTokens() {
         }
         break;
       
+      case ' ':
+      case '\r':
+      case '\t':
+        // Ignore whitespace.
+        break;
+  
+      case '\n':
+        line++;
+        break;  
       // handle characters that Lox doesn't recognize
       default:
         Lox.error(line, "Unexpected character.");
@@ -86,7 +95,8 @@ List<Token> scanTokens() {
     current++;
     return true;
   }
-  
+
+  // lookahead without consuming char (unlike advance)
   private char peek() {
     if (isAtEnd()) return '\0';
     return source.charAt(current);
