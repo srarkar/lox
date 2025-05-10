@@ -86,6 +86,11 @@ List<Token> scanTokens() {
     current++;
     return true;
   }
+  
+  private char peek() {
+    if (isAtEnd()) return '\0';
+    return source.charAt(current);
+  }
 
   // Helpers
 
