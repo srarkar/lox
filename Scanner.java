@@ -87,11 +87,19 @@ List<Token> scanTokens() {
       default:
         if (isDigit(c)) {
             number();
+        } else if (isAlpha(c)) {
+            identifier();
         } else {
             Lox.error(line, "Unexpected character.");
-        }
+      }
         break;
     }
+  }
+
+  private void identifier() {
+    while (isAlphaNumeric(peek())) advance();
+
+    addToken(IDENTIFIER);
   }
   
   // consume chars until number ends, much like strings!
@@ -108,6 +116,7 @@ List<Token> scanTokens() {
 
     addToken(NUMBER,
         Double.parseDouble(source.substring(start, current)));
+}
 
     
   // consume chars until we see the closing ""
@@ -131,6 +140,9 @@ List<Token> scanTokens() {
     addToken(STRING, value);
   }
 
+
+  /// Helpers
+
   // conditional advance if current matches expected
   private boolean match(char expected) {
     if (isAtEnd()) return false;
@@ -150,7 +162,23 @@ List<Token> scanTokens() {
     return c >= '0' && c <= '9';
   } 
 
-  // Helpers
+  // we need another lookahead for decimal, since "123." is not valid, but any digit following the . is
+  private char peekNext() {
+    if (current + 1 >= source.length()) return '\0';
+    return source.charAt(current + 1);
+  } 
+
+  private boolean isAlpha(char c) {
+    return (c >= 'a' && c <= 'z') ||
+           (c >= 'A' && c <= 'Z') ||
+            c == '_';
+  }
+
+  private boolean isAlphaNumeric(char c) {
+    return isAlpha(c) || isDigit(c);
+  }
+
+  
 
   // All characters are consumed
   private boolean isAtEnd() {
