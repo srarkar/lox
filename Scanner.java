@@ -80,11 +80,55 @@ List<Token> scanTokens() {
       case '\n':
         line++;
         break;  
+
+      case '"': string(); break;
+
       // handle characters that Lox doesn't recognize
       default:
-        Lox.error(line, "Unexpected character.");
+        if (isDigit(c)) {
+            number();
+        } else {
+            Lox.error(line, "Unexpected character.");
+        }
         break;
     }
+  }
+  
+  // consume chars until number ends, much like strings!
+  private void number() {
+    while (isDigit(peek())) advance();
+
+    // Look for a fractional part.
+    if (peek() == '.' && isDigit(peekNext())) {
+      // Consume the "."
+      advance();
+
+      while (isDigit(peek())) advance();
+    }
+
+    addToken(NUMBER,
+        Double.parseDouble(source.substring(start, current)));
+
+    
+  // consume chars until we see the closing ""
+  // escape sequences currently unsupported
+  private void string() {
+    while (peek() != '"' && !isAtEnd()) {
+      if (peek() == '\n') line++;
+      advance();
+    }
+
+    if (isAtEnd()) {
+      Lox.error(line, "Unterminated string.");
+      return;
+    }
+
+    // The closing ".
+    advance();
+
+    // Trim the surrounding quotes.
+    String value = source.substring(start + 1, current - 1);
+    addToken(STRING, value);
   }
 
   // conditional advance if current matches expected
@@ -101,6 +145,10 @@ List<Token> scanTokens() {
     if (isAtEnd()) return '\0';
     return source.charAt(current);
   }
+
+  private boolean isDigit(char c) {
+    return c >= '0' && c <= '9';
+  } 
 
   // Helpers
 
